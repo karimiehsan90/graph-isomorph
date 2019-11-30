@@ -1,0 +1,8 @@
+---
+tomcat_src: /home/ehsan/Softwares/apache-tomcat-8.5.47.tar.gz
+tomcat_dir_dest: /var/local
+tomcat_version: 8.5.47
+tomcat_hosts: 
+  - k-master
+tomcat_port: 80
+tomcat_container_home: /usr/local/tomcat

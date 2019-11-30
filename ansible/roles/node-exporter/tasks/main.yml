@@ -1,0 +1,24 @@
+---
+- name: Upload to servers
+  copy:
+    src: "{{ node_exporter_src }}"
+    dest: "{{ node_exporter_dir_dest }}/node-exporter.tar.gz"
+  when: 
+    - node_exporter_install_mode == 'upload'
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ node_exporter_dir_dest }}/node-exporter.tar.gz"
+    dest: "{{ node_exporter_dir_dest }}"
+    remote_src: yes
+
+- name: Copy to node-exporter folder
+  copy:
+    src: "{{ node_exporter_dir_dest }}/node_exporter-{{ node_exporter_version }}.linux-amd64/"
+    dest: "{{ node_exporter_dir_dest }}/node-exporter"
+    remote_src: yes
+
+- name: Run node exporter
+  shell: "{{ node_exporter_dir_dest }}/node-exporter/node_exporter --web.listen-address=:{{ node_exporter_port }} > /dev/null &"
+  async: 10
+  poll: 0

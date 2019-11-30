@@ -1,0 +1,55 @@
+---
+- name: Upload to servers
+  copy:
+    src: "{{ zookeeper_src }}"
+    dest: "{{ zookeeper_file_dest }}"
+  when: 
+    - zookeeper_install_mode == 'upload'
+    - inventory_hostname in zookeeper_servers
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ zookeeper_file_dest }}"
+    dest: "{{ zookeeper_dir_dest }}"
+    remote_src: yes
+  when: inventory_hostname in zookeeper_servers
+
+- name: Copy to zookeeper folder
+  copy:
+    src: "{{ zookeeper_dir_dest }}/zookeeper-{{ zookeeper_version }}/"
+    dest: "{{ zookeeper_dir_dest }}/zookeeper"
+    remote_src: yes
+  when: inventory_hostname in zookeeper_servers
+
+- name: Ensure data dir exists
+  file:
+    path: "{{ zookeeper_dir_dest }}/zookeeper/data"
+    state: directory
+  when: inventory_hostname in zookeeper_servers
+
+- name: Set id
+  template:
+    src: myid.j2
+    dest: "{{ zookeeper_dir_dest }}/zookeeper/data/myid"
+  when: inventory_hostname in zookeeper_servers
+
+- name: Configure zoo.cfg
+  template:
+    src: zoo.cfg.j2
+    dest: "{{ zookeeper_dir_dest }}/zookeeper/conf/zoo.cfg"
+  when: inventory_hostname in zookeeper_servers
+
+- name: Ensure logs dir exists
+  file: 
+    path: "{{ zookeeper_dir_dest }}/zookeeper/logs"
+    state: directory
+  when: inventory_hostname in zookeeper_servers
+
+- name: Ensure sample file removed
+  file:
+    path: "{{ zookeeper_dir_dest }}/zookeeper/conf/zoo_sample.cfg"
+    state: absent
+
+- name: Start zookeeper
+  command: "{{ zookeeper_dir_dest }}/zookeeper/bin/zkServer.sh start"
+  when: inventory_hostname in zookeeper_servers

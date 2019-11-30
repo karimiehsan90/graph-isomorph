@@ -1,0 +1,6 @@
+---
+node_exporter_install_mode: upload
+node_exporter_src: /home/ehsan/Softwares/node_exporter-0.18.1.linux-amd64.tar.gz
+node_exporter_dir_dest: /var/local
+node_exporter_port: 9092
+node_exporter_version: 0.18.1

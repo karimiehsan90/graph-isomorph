@@ -1,0 +1,24 @@
+---
+- name: Ensure docker installed
+  apt:
+    name: docker.io
+    state: present
+  when: inventory_hostname in docker_hosts
+
+- name: Ensure docker config file exists
+  file:
+    path: /etc/docker/daemon.json
+    state: touch
+  changed_when: no
+  when: inventory_hostname in docker_hosts
+
+- name: Ensure private registry added
+  lineinfile:
+    path: /etc/docker/daemon.json
+    line: '{ "insecure-registries":["{{ docker_private_registry }}"] }'
+    state: present
+  notify: restart docker
+  when: inventory_hostname in docker_hosts
+
+- name: Flush handlers
+  meta: flush_handlers

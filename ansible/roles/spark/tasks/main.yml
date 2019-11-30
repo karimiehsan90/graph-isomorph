@@ -1,0 +1,42 @@
+---
+- name: Upload to servers
+  copy:
+    src: "{{ spark_src }}"
+    dest: "{{ spark_file_dest }}"
+  when: spark_install_mode == 'upload'
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ spark_file_dest }}"
+    dest: "{{ spark_dir_dest }}"
+    remote_src: yes
+
+- name: Copy to hadoop folder
+  copy:
+    src: "{{ spark_dir_dest }}/spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}/"
+    dest: "{{ spark_dir_dest }}/spark"
+    remote_src: yes
+
+- name: Copy spark-env template
+  copy:
+    src: "{{ spark_dir_dest }}/spark/conf/spark-env.sh.template"
+    dest: "{{ spark_dir_dest }}/spark/conf/spark-env.sh"
+    remote_src: yes
+
+- name: Config spark-env.sh
+  lineinfile:
+    path: "{{ spark_dir_dest }}/spark/conf/spark-env.sh"
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - "export SPARK_MASTER_HOST='{{ spark_master }}'"
+    - "export JAVA_HOME={{ jdk_dir_dest }}/jdk"
+
+- name: Config slaves
+  template:
+    src: "slaves.j2"
+    dest: "{{ spark_dir_dest }}/spark/conf/slaves"
+
+- name: Start spark
+  command: "{{ spark_dir_dest }}/spark/sbin/start-all.sh"
+  when: inventory_hostname == spark_master

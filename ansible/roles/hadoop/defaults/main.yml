@@ -1,0 +1,11 @@
+---
+hadoop_install_mode: upload
+hadoop_src: /home/ehsan/Softwares/hadoop-2.7.7.tar.gz
+hadoop_file_dest: /var/local/hadoop.tar.gz
+hadoop_dir_dest: /var/local
+hadoop_version: 2.7.7
+hadoop_master: k-master
+hadoop_slaves:
+  - k-slave-1
+  - k-slave-2
+jdk_dir_dest: /var/local

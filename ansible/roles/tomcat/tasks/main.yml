@@ -1,0 +1,30 @@
+---
+- name: Copy tomcat
+  copy:
+    src: "{{ tomcat_src }}"
+    dest: "{{ tomcat_dir_dest }}/tomcat.tar.gz"
+  when: inventory_hostname in tomcat_hosts
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ tomcat_dir_dest }}/tomcat.tar.gz"
+    dest: "{{ tomcat_dir_dest }}"
+    remote_src: yes
+  when: inventory_hostname in tomcat_hosts
+
+- name: Copy to tomcat folder
+  copy:
+    src: "{{ tomcat_dir_dest }}/apache-tomcat-{{ tomcat_version }}/"
+    dest: "{{ tomcat_dir_dest }}/tomcat"
+    remote_src: yes
+  when: inventory_hostname in tomcat_hosts
+
+- name: Copy config file
+  template:
+    src: server.xml.j2
+    dest: "{{ tomcat_dir_dest }}/tomcat/conf/server.xml"
+  when: inventory_hostname in tomcat_hosts
+
+- name: Start tomcat
+  command: "{{ tomcat_dir_dest }}/tomcat/bin/startup.sh"
+  when: inventory_hostname in tomcat_hosts

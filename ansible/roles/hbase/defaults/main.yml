@@ -1,0 +1,12 @@
+---
+hbase_install_mode: upload
+hbase_src: /home/ehsan/Softwares/hbase-1.4.10-bin.tar.gz
+hbase_file_dest: /var/local/hbase.tar.gz
+hbase_dir_dest: /var/local
+hbase_version: 1.4.10
+hbase_master: k-master
+hbase_slaves:
+  - k-slave-1
+  - k-slave-2
+jdk_dir_dest: /var/local
+hadoop_dir_dest: /var/local

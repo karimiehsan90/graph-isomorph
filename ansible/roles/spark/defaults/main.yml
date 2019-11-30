@@ -1,0 +1,12 @@
+---
+spark_install_mode: upload
+spark_src: /home/ehsan/Softwares/spark-2.4.3-bin-hadoop2.7.tgz
+spark_file_dest: /var/local/spark.tar.gz
+spark_dir_dest: /var/local
+spark_version: 2.4.3
+hadoop_version: 2.7
+spark_master: k-master
+spark_slaves:
+  - k-slave-1
+  - k-slave-2
+jdk_dir_dest: /var/local

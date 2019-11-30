@@ -1,0 +1,15 @@
+---
+prometheus_install_mode: upload
+prometheus_src: /home/ehsan/Softwares/prometheus-2.11.1.linux-amd64.tar.gz
+prometheus_dir_dest: /var/local
+prometheus_port: 9090
+prometheus_hosts:
+  - k-master
+prometheus_slaves:
+  - k-slave-1
+  - k-slave-2
+prometheus_version: 2.11.1
+prometheus_jobs:
+  - job_name: node exporter
+    port: 9092
+    hosts: all

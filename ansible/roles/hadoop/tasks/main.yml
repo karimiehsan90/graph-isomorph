@@ -1,0 +1,58 @@
+---
+- name: Upload to servers
+  copy:
+    src: "{{ hadoop_src }}"
+    dest: "{{ hadoop_file_dest }}"
+  when: hadoop_install_mode == 'upload'
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ hadoop_file_dest }}"
+    dest: "{{ hadoop_dir_dest }}"
+    remote_src: yes
+
+- name: Copy to hadoop folder
+  copy:
+    src: "{{ hadoop_dir_dest }}/hadoop-{{ hadoop_version }}/"
+    dest: "{{ hadoop_dir_dest }}/hadoop"
+    remote_src: yes
+
+- name: Add hadoop to environment variables
+  lineinfile:
+    path: "/root/.bashrc"
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "export HADOOP_HOME={{ hadoop_dir_dest }}/hadoop"
+    - "export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin"
+    - 'export HDFS_NAMENODE_USER="root"'
+    - 'export HDFS_DATANODE_USER="root"'
+    - 'export HDFS_SECONDARYNAMENODE_USER="root"'
+    - 'export YARN_RESOURCEMANAGER_USER="root"'
+    - 'export YARN_NODEMANAGER_USER="root"'
+
+- name: Copy configurations to servers
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ hadoop_dir_dest }}/hadoop/etc/hadoop/{{ item }}"
+  loop:
+    - core-site.xml
+    - hdfs-site.xml
+    - mapred-site.xml
+    - yarn-site.xml
+    - slaves
+
+- name: Export JAVA_HOME in hadoop-env.sh
+  lineinfile:
+    path: "{{ hadoop_dir_dest }}/hadoop/etc/hadoop/hadoop-env.sh"
+    line: "export JAVA_HOME={{ jdk_dir_dest }}/jdk"
+    state: present
+
+- name: Format namenode
+  command: "{{ hadoop_dir_dest }}/hadoop/bin/hdfs namenode -format"
+  when: false
+  changed_when: true
+
+- name: Start namenode
+  command: '{{ hadoop_dir_dest }}/hadoop/sbin/start-all.sh'
+  when: inventory_hostname == hadoop_master

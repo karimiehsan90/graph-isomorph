@@ -1,0 +1,27 @@
+---
+- name: Upload to servers
+  copy:
+    src: "{{ jdk_src }}"
+    dest: "{{ jdk_file_dest }}"
+  when: jdk_install_mode == 'upload'
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ jdk_file_dest }}"
+    dest: "{{ jdk_dir_dest }}"
+    remote_src: yes
+
+- name: Copy to jdk folder
+  copy:
+    src: "{{ jdk_dir_dest }}/jdk{{ jdk_version }}/"
+    dest: "{{ jdk_dir_dest }}/jdk"
+    remote_src: yes
+
+- name: Add JAVA_HOME to environment variavles
+  lineinfile:
+    path: /root/.bashrc
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "export JAVA_HOME={{ jdk_dir_dest }}/jdk"
+    - "export PATH=$PATH:$JAVA_HOME/bin"

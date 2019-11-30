@@ -1,0 +1,18 @@
+---
+- hosts: graph-isomorph
+  vars:
+    - ansible_ssh_user: root
+    - jdk_dir_dest: /var/local
+  roles:
+    - role: jdk
+    - role: hadoop
+    - role: zookeeper
+    - role: hbase
+    - role: spark
+    - role: docker
+    - role: tomcat
+    - role: jenkins
+    - role: prometheus
+    - role: node-exporter
+  environment:
+    JAVA_HOME: "{{ jdk_dir_dest }}/jdk"

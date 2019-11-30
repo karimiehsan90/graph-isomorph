@@ -1,0 +1,6 @@
+---
+- name: Copy jenkins
+  copy:
+    src: "{{ jenkins_src }}"
+    dest: "{{ tomcat_webapps }}/jenkins.war"
+  when: inventory_hostname in jenkins_hosts

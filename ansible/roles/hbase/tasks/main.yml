@@ -1,0 +1,54 @@
+---
+- name: Upload to servers
+  copy:
+    src: "{{ hbase_src }}"
+    dest: "{{ hbase_file_dest }}"
+  when: hbase_install_mode == 'upload'
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ hbase_file_dest }}"
+    dest: "{{ hbase_dir_dest }}"
+    remote_src: yes
+
+- name: Copy to hbase folder
+  copy:
+    src: "{{ hbase_dir_dest }}/hbase-{{ hbase_version }}/"
+    dest: "{{ hbase_dir_dest }}/hbase"
+    remote_src: yes
+
+- name: Create /hbase in hadoop
+  command: "{{ hadoop_dir_dest }}/hadoop/bin/hadoop fs -mkdir /hbase"
+  when:
+    - inventory_hostname == hbase_master
+    - no
+
+- name: Add to PATH
+  lineinfile:
+    path: /root/.bashrc
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "HBASE_HOME={{ hbase_dir_dest }}/hbase"
+    - PATH=$PATH:$HBASE_HOME/bin
+
+- name: Copy configurations to servers
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ hbase_dir_dest}}/hbase/conf/{{ item }}"
+  with_items:
+    - regionservers
+    - hbase-site.xml
+
+- name: Config hbase-env.sh
+  lineinfile:
+    path: "{{ hbase_dir_dest }}/hbase/conf/hbase-env.sh"
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - "export HBASE_MANAGES_ZK=false"
+    - "export JAVA_HOME={{ jdk_dir_dest }}/jdk"
+
+- name: Start hbase
+  command: "{{ hbase_dir_dest }}/hbase/bin/start-hbase.sh"
+  when: inventory_hostname == hbase_master

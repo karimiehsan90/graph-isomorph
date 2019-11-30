@@ -1,0 +1,34 @@
+---
+- name: Upload to servers
+  copy:
+    src: "{{ prometheus_src }}"
+    dest: "{{ prometheus_dir_dest }}/prometheus.tar.gz"
+  when: 
+    - prometheus_install_mode == 'upload'
+    - inventory_hostname in prometheus_hosts
+
+- name: Unarchieve file
+  unarchive:
+    src: "{{ prometheus_dir_dest }}/prometheus.tar.gz"
+    dest: "{{ prometheus_dir_dest }}"
+    remote_src: yes
+  when: inventory_hostname in prometheus_hosts
+
+- name: Copy to prometheus folder
+  copy:
+    src: "{{ prometheus_dir_dest }}/prometheus-{{ prometheus_version }}.linux-amd64/"
+    dest: "{{ prometheus_dir_dest }}/prometheus"
+    remote_src: yes
+  when: inventory_hostname in prometheus_hosts
+
+- name: Copy config file
+  template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_dir_dest }}/prometheus/prometheus.yml" 
+  when: inventory_hostname in prometheus_hosts
+
+- name: Run prometheus
+  shell: "{{ prometheus_dir_dest }}/prometheus/prometheus --config.file {{ prometheus_dir_dest }}/prometheus/prometheus.yml > /dev/null &"
+  async: 10
+  poll: 0
+  when: inventory_hostname in prometheus_hosts

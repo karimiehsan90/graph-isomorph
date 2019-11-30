@@ -1,0 +1,6 @@
+---
+jenkins_install_mode: upload
+jenkins_hosts:
+  - k-master
+jenkins_src: /home/ehsan/Softwares/jenkins.war
+tomcat_webapps: /var/local/tomcat/webapps

@@ -1,0 +1,4 @@
+---
+docker_private_registry: main:5000
+docker_hosts: 
+  - k-master

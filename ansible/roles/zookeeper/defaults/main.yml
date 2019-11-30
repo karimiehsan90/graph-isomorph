@@ -1,0 +1,10 @@
+---
+zookeeper_install_mode: upload
+zookeeper_src: /home/ehsan/Softwares/zookeeper-3.4.12.tar.gz
+zookeeper_file_dest: /var/local/zookeeper.tar.gz
+zookeeper_dir_dest: /var/local
+zookeeper_version: 3.4.12
+zookeeper_servers:
+  - k-master
+  - k-slave-1
+  - k-slave-2

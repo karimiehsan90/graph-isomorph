@@ -1,0 +1,6 @@
+---
+jdk_install_mode: upload
+jdk_src: /home/ehsan/Softwares/jdk-8u192-linux-x64.tar.gz
+jdk_file_dest: /var/local/jdk.tar.gz
+jdk_dir_dest: /var/local
+jdk_version: 1.8.0_192

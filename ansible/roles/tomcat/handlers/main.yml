@@ -1,0 +1,3 @@
+---
+- name: restart tomcat
+  command: "{{ tomcat_dir_dest }}/tomcat/bin/shutdown.sh && {{ tomcat_dir_dest }}/tomcat/bin/startup.sh"

@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+   - name: Copy hosts
+     copy:
+       src: /etc/hosts
+       dest: /etc/hosts
+   - name: Ensure .ssh dir exists
+     file:
+       path: /root/.ssh
+       state: directory
+   - name: Ensure authorized_keys absent
+     file:
+       path: /root/.ssh/authorized_keys
+       state: absent
+   - name: Copy id rsa      
+     copy:
+       src: /home/ehsan/.ssh/id_rsa.pub
+       dest: /root/.ssh/authorized_keys
+       mode: 0644
+       owner: root
+       group: root
